@@ -7,6 +7,7 @@ A collection of [Claude Code](https://claude.com/claude-code) skills — reusabl
 | Skill | What it does |
 |---|---|
 | [`runbook`](runbook/) | Document-first HTML runbooks: before executing any planned task (ops, infra, migration, deployment, refactor, …), Claude writes the plan of record into a self-contained HTML runbook with live status chips. You review **the runbook**, not a chat message; work starts on your go-ahead, and chips flip `PENDING → IN PROGRESS → DONE` as steps complete, so the doc always mirrors reality. |
+| [`find-course`](find-course/) | LinkedIn Learning course finder: give it a learning goal, skill level, time budget, learning style, and result count, and Claude drives a real browser (via [Playwright MCP](https://github.com/microsoft/playwright-mcp)) to search the catalog, visit course pages, filter out anything off-goal / too long / too basic, and return a ranked comparison table with picks and a suggested learning order. Every fact comes from a page it actually loaded. Requires the Playwright MCP server (setup inside the skill); sign-in is always manual and persists across sessions. |
 
 ## Install
 
@@ -15,9 +16,10 @@ Copy the skill folder(s) you want into your Claude Code skills directory:
 ```bash
 git clone https://github.com/dev-mohsinm/claude-skills.git
 cp -r claude-skills/runbook ~/.claude/skills/runbook
+cp -r claude-skills/find-course ~/.claude/skills/find-course
 ```
 
-That's it — Claude Code auto-discovers skills in `~/.claude/skills/` (each skill is a folder with a `SKILL.md`). Trigger it explicitly by typing `/runbook`, or just ask Claude to plan an ops/infra task and it will offer the document-first flow.
+That's it — Claude Code auto-discovers skills in `~/.claude/skills/` (each skill is a folder with a `SKILL.md`). Trigger a skill explicitly by typing its name (`/runbook`, `/find-course`), or just describe a matching task and Claude applies it — e.g. ask Claude to plan an ops/infra task and it will offer the document-first runbook flow.
 
 > Skills can also be installed per-project under `<repo>/.claude/skills/` if you want them scoped to one codebase.
 
