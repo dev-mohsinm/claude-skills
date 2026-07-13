@@ -20,7 +20,7 @@ For **any other planned task** (feature, refactor, config change, …): after a 
    - **Check for an existing runbook first** — search the destination for a doc already covering this work and update it (chips, `Updated:` line, correction notes) instead of creating a near-duplicate.
    - **Sensitive-content gate:** if the runbook will hold infra/access detail (IPs, hostnames, account IDs, creds paths) and the destination is inside a git repo, verify the path is gitignored first (`git check-ignore -q <dest> && echo ignored`). If it isn't, use a gitignored location or `~/docs/` — never let a sensitive runbook become committable.
 
-2. **Read the fresh copy once, then fill content with targeted Edit calls only.** (The Edit tool requires one Read of the destination file — it's ~9KB, cheap. Never Read the template itself or any old reference doc; Reading an existing runbook you're *updating* is fine and required.) The template contains `{{PLACEHOLDER}}` markers for: title, meta block (Related/Context/Purpose/Scope/Created), headline verdict, locked-decisions rows, summary-table rows, item-cards, sequence, verification rows, rollback rows, footer date.
+2. **Read the fresh copy once, then fill content with targeted Edit calls only.** (The Edit tool requires one Read of the destination file — it's ~9KB, cheap. Never Read the template itself or any old reference doc; Reading an existing runbook you're *updating* is fine and required.) The template contains `{{PLACEHOLDER}}` markers for: title, meta block (Related/Context/Purpose/Scope/Created), headline verdict, locked-decisions rows, glossary rows (services + acronyms), summary-table rows, item-cards, sequence, verification rows, rollback rows, footer date.
    - Duplicate the single example row/card for each real item. In the summary table, the **item title** is the hyperlink to its `#item-N` card (not the number — the number stays plain text); keep row count and anchors in sync with the cards.
    - Every item/step-tracking table (summary, verification) must carry a **Status column with a chip** (`<span class="status …">…</span>`) — never leave status as plain text or omit the column.
    - The summary table also has a **One-line verdict** column (`{{ONE_LINE_VERDICT}}`) — always fill it with the crisp per-row takeaway (what's the upshot of this item). Not optional.
@@ -44,6 +44,7 @@ Each is marked `<!-- OPTIONAL -->` in the template. Keep the ones that fit the d
 
 ### Always-on conventions (not optional)
 
+- **Glossary section** — every runbook carries a Glossary (the template includes it, placed before Items): one table listing each service/tool named in the doc (what it is, in plain language + its role in this plan), and one expanding every acronym (full form + what it means here). Before handoff, sweep the finished draft for proper-noun services and acronyms and make sure each one appears — including things listed as out-of-scope or rejected alternatives, since those names confuse readers just as much. When a later edit introduces a new name, add it to the Glossary in the same edit. The goal: the doc is self-contained for a reader who doesn't know the stack.
 - **`Updated:` line** in the meta block — a running dated changelog of what changed since creation (e.g. `2026-07-07 — item 3 done; 2026-07-06 — added item 5`). Start it as `—` for a brand-new doc; append an entry every time you materially change the doc. This is how a runbook stays a *living* record.
 - **"Verified via" evidence** — back factual claims with the command that proved them, inline: *"Verified via `aws cloudwatch describe-alarms` — zero alarms."* Applies the same honesty as correction notes: a reader can re-run the check. Don't assert state you didn't observe.
 - **Custom chip text is fine** — the chip *styles* are fixed but their *text* isn't. Use nuanced states when they're truer: `AWAITING USER`, `PARTIALLY DONE`, `SOAK UNTIL 2026-06-27`, `BLOCKED — waiting on DNS` (reuse the closest style: `awaiting`/`done`/`in-progress`/`blocked`).
@@ -78,7 +79,7 @@ What's *not* flexible: the meta block, status chips on anything trackable, the r
 | needs things in place first | **Prerequisites / dependencies** — what must be true before step 1 |
 | could break other things | **Blast radius** — who/what is affected if it goes wrong |
 | has a fuzzy "done" | **Success criteria / metrics** — measurable done, separate from mechanical verification |
-| is dense with IDs/hosts/accounts | **Key entities / glossary** — a reference table of the nouns |
+| is dense with IDs/hosts/accounts | **Key entities** — a reference table of the specific instances (hosts, account IDs, buckets); the always-on Glossary already covers service names and acronyms |
 | touches creds/permissions/data | **Security considerations** |
 | spans people or days | **Timeline / owners** — phases with who + when |
 | is an incident write-up | **RCA shape** — timeline → root cause → contributing factors → action items |
