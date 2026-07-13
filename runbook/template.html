@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}}</title>
+<style>
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; max-width: 1100px; margin: 24px auto; padding: 0 20px; color: #222; line-height: 1.45; }
+  h1 { border-bottom: 2px solid #333; padding-bottom: 6px; }
+  h2 { border-bottom: 1px solid #ccc; padding-bottom: 4px; margin-top: 32px; }
+  .meta { background: #f4f4f4; border: 1px solid #ddd; padding: 10px 14px; border-radius: 4px; margin: 12px 0; font-size: 14px; }
+  table { border-collapse: collapse; width: 100%; margin: 8px 0; font-size: 14px; }
+  th, td { border: 1px solid #bbb; padding: 6px 8px; text-align: left; vertical-align: top; }
+  th { background: #eee; }
+  .status { display: inline-block; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: bold; letter-spacing: 0.5px; white-space: nowrap; }
+  .pending      { background: #e8e8e8; color: #555; }
+  .awaiting     { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+  .in-progress  { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+  .done         { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+  .blocked      { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  .risk-high    { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; font-weight: bold; }
+  .risk-med     { background: #ffe5b4; color: #7a4a00; border: 1px solid #ffd180; font-weight: bold; }
+  .risk-low     { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; font-weight: bold; }
+  .portable     { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; font-weight: bold; }
+  .disp         { background: #e7e9f0; color: #33406b; border: 1px solid #c7cde0; font-weight: bold; }
+  /* Priority chips — alternative severity axis to risk-* (urgency/importance, not danger). */
+  .priority-1   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; font-weight: bold; }
+  .priority-2   { background: #ffe5b4; color: #7a4a00; border: 1px solid #ffd180; font-weight: bold; }
+  .priority-3   { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; font-weight: bold; }
+  details { margin: 4px 0; }
+  details summary { cursor: pointer; padding: 2px 0; }
+  button.toggle-all { font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; padding: 3px 10px; border: 1px solid #bbb; border-radius: 3px; background: #eee; color: #333; margin-left: 12px; vertical-align: middle; }
+  button.toggle-all:hover { background: #e0e0e0; }
+  code, pre { background: #f6f6f6; padding: 1px 5px; border-radius: 3px; font-size: 13px; }
+  pre { padding: 8px 12px; overflow-x: auto; }
+  .item-card { border: 1px solid #ddd; border-radius: 4px; padding: 12px; margin: 10px 0; background: #fafafa; }
+  .item-card.high { border-left: 4px solid #d9534f; }
+  .item-card.med { border-left: 4px solid #f0ad4e; }
+  .item-card.low { border-left: 4px solid #ffc107; }
+  .item-card.ok { border-left: 4px solid #5cb85c; }
+  .item-card.p1 { border-left: 4px solid #d9534f; }
+  .item-card.p2 { border-left: 4px solid #f0ad4e; }
+  .item-card.p3 { border-left: 4px solid #ffc107; }
+  .small { font-size: 12px; color: #666; }
+  /* Dark mode — default is light; Ctrl/Cmd+Shift+L toggles (persisted in localStorage). */
+  body.dark { background: #16181d; color: #d6d8dd; }
+  body.dark h1 { border-color: #999; }
+  body.dark h2 { border-color: #444; }
+  body.dark .meta { background: #1f2229; border-color: #3a3f4a; }
+  body.dark th { background: #262a33; }
+  body.dark th, body.dark td { border-color: #3a3f4a; }
+  body.dark code, body.dark pre { background: #23262e; }
+  body.dark .item-card { background: #1c1f26; border-color: #3a3f4a; }
+  body.dark .small { color: #9aa0aa; }
+  body.dark .pending { background: #2c2f36; color: #b6bac2; }
+  body.dark button.toggle-all { background: #262a33; color: #d6d8dd; border-color: #555; }
+  body.dark button.toggle-all:hover { background: #303540; }
+  body.dark a { color: #7ab7ff; }
+</style>
+</head>
+<body>
+
+<h1>{{TITLE}} <span class="status awaiting">AWAITING REVIEW</span></h1>
+
+<div class="meta">
+  <strong>Related:</strong> {{RELATED_DOCS_OR_DASH}}<br>
+  <strong>Context:</strong> {{ONE_LINE_CONTEXT}}<br>
+  <strong>Purpose:</strong> {{WHY_THIS_DOC_EXISTS}}<br>
+  <strong>Scope:</strong> {{WHAT_IS_IN_AND_OUT_OF_SCOPE}}<br>
+  <strong>Created:</strong> {{DATE}}<br>
+  <strong>Updated:</strong> {{UPDATE_LOG_OR_DASH}}
+</div>
+
+<div class="meta">
+  <strong>Status legend:</strong>
+  <span class="status pending">PENDING</span>
+  <span class="status awaiting">AWAITING REVIEW</span>
+  <span class="status in-progress">IN PROGRESS</span>
+  <span class="status done">DONE</span>
+  <span class="status blocked">BLOCKED</span>
+  &nbsp;|&nbsp;
+  <strong>Risk legend:</strong>
+  <span class="status risk-high">HIGH</span>
+  <span class="status risk-med">MED</span>
+  <span class="status risk-low">LOW</span>
+  <span class="status portable">PORTABLE</span>
+</div>
+
+<!-- OPTIONAL risk-legend prose: define what each level means for THIS doc. Delete for simple execution runbooks. -->
+<p class="small">
+  <span class="status risk-high">HIGH</span> {{WHAT_HIGH_MEANS_HERE}} &middot;
+  <span class="status risk-med">MED</span> {{WHAT_MED_MEANS_HERE}} &middot;
+  <span class="status risk-low">LOW</span> {{WHAT_LOW_MEANS_HERE}} &middot;
+  <span class="status portable">PORTABLE</span> {{WHAT_PORTABLE_MEANS_HERE}}
+</p>
+
+<h2>Verdict</h2>
+<p><strong>{{HEADLINE_VERDICT_ONE_OR_TWO_SENTENCES}}</strong></p>
+
+<h2>Locked decisions</h2>
+<table>
+  <tr><th>Decision</th><th>Choice</th><th>Why</th></tr>
+  <tr><td>{{DECISION}}</td><td>{{CHOICE}}</td><td>{{WHY}}</td></tr>
+</table>
+
+<h2 id="summary">Summary</h2>
+<table>
+  <!-- Effort column is OPTIONAL: drop the Effort th+td for feasibility docs where time-per-item isn't meaningful. -->
+  <tr><th>#</th><th>Item</th><th>Risk</th><th>Status</th><th>Effort</th><th>One-line verdict</th></tr>
+  <tr><td>1</td><td><a href="#item-1">{{ITEM_TITLE}}</a></td><td><span class="status risk-med">MED</span></td><td><span class="status pending">PENDING</span></td><td>{{EFFORT_e.g_~5_min}}</td><td>{{ONE_LINE_VERDICT}}</td></tr>
+</table>
+
+<h2>Items <button type="button" class="toggle-all" id="toggleAll">Expand all</button></h2>
+
+<div class="item-card med" id="item-1">
+  <strong>1. {{ITEM_TITLE}}</strong>
+  <span class="status risk-med">MED</span>
+  <span class="status pending">PENDING</span>
+  <!-- OPTIONAL disposition chip: tag the KIND of work, separate from risk. Delete if not useful. -->
+  <span class="disp">{{DISPOSITION_e.g_REBUILD_PORTABLE_STALE}}</span>
+  <details>
+    <summary>Brief</summary>
+    <!-- Item anatomy: keep the labels that apply, delete the rest. Back factual claims with the command that proves them, e.g. "Verified via <code>aws ... describe</code> — empty." -->
+    <p><strong>What's involved:</strong> {{WHAT}}</p>
+    <p><strong>Why / how:</strong> {{WHY_HOW}}</p>
+    <pre>{{COMMANDS_IF_ANY}}</pre>
+    <p><strong>What carries over / result:</strong> {{CARRIES_OVER}}</p>
+    <p class="small"><strong>Verify:</strong> {{VERIFY_NOTE}}</p>
+    <p><strong>Cost:</strong> {{COST_e.g_$0}} &middot; <strong>Risk:</strong> {{RESIDUAL_RISK_ONE_LINE}}</p>
+    <!-- OPTIONAL correction note — when a claim here turns out wrong, DON'T silently overwrite:
+         add a CORRECTED chip next to the title above and a dated note here.
+    <p class="small"><strong>Correction {{DATE}}:</strong> originally said {{OLD_CLAIM}}; {{WHAT_IS_ACTUALLY_TRUE}}.</p>
+    -->
+  </details>
+</div>
+
+<!-- OPTIONAL: keep only if there are honest trade-offs to disclose -->
+<h2>What gets worse</h2>
+<ul>
+  <li>{{HONEST_DOWNSIDE}}</li>
+</ul>
+
+<!-- OPTIONAL: what was DELIBERATELY excluded, and why. Keeps the doc honest about scope; pre-empts scope creep. Delete if nothing was consciously cut. -->
+<h2>Out of scope (explicitly NOT doing)</h2>
+<ul>
+  <li><strong>{{EXCLUDED_ITEM}}</strong> — {{WHY_EXCLUDED}}</li>
+</ul>
+
+<h2>Recommended sequence</h2>
+<ol>
+  <li>{{STEP_IN_ORDER}}</li>
+</ol>
+
+<h2>Verification</h2>
+<table>
+  <tr><th>Check</th><th>Command / where</th><th>Expected</th><th>Status</th></tr>
+  <tr><td>{{CHECK}}</td><td><code>{{COMMAND}}</code></td><td>{{EXPECTED}}</td><td><span class="status pending">PENDING</span></td></tr>
+</table>
+
+<h2>Rollback</h2>
+<table>
+  <tr><th>If this went wrong</th><th>Undo with</th></tr>
+  <tr><td>{{FAILURE_MODE}}</td><td><code>{{UNDO_COMMAND}}</code></td></tr>
+</table>
+
+<h2>How to use this doc</h2>
+<p class="small">
+  This runbook is the plan of record. It is written before execution and reviewed by the owner;
+  work starts only after go-ahead. As steps complete, chips flip
+  <span class="status pending">PENDING</span> → <span class="status in-progress">IN PROGRESS</span> →
+  <span class="status done">DONE</span> with a dated <em>Completed:</em> note, so the doc always mirrors reality.
+  Press <code>Ctrl/⌘+Shift+L</code> to toggle dark mode.
+  Last updated: {{DATE}}.
+</p>
+
+<script>
+(function () {
+  var btn = document.getElementById('toggleAll');
+  if (!btn) return;
+  var all = function () { return document.querySelectorAll('details'); };
+  var anyClosed = function () { return [].some.call(all(), function (d) { return !d.open; }); };
+  var sync = function () { btn.textContent = anyClosed() ? 'Expand all' : 'Collapse all'; };
+  btn.addEventListener('click', function () {
+    var open = anyClosed();
+    [].forEach.call(all(), function (d) { d.open = open; });
+    sync();
+  });
+  document.addEventListener('toggle', sync, true);
+  sync();
+})();
+(function () {
+  try { if (localStorage.getItem('runbook-theme') === 'dark') document.body.classList.add('dark'); } catch (e) {}
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'L' || e.key === 'l')) {
+      e.preventDefault();
+      var dark = document.body.classList.toggle('dark');
+      try { localStorage.setItem('runbook-theme', dark ? 'dark' : 'light'); } catch (e2) {}
+    }
+  });
+})();
+</script>
+
+</body>
+</html>
