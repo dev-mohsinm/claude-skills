@@ -14,8 +14,9 @@ For **any other planned task** (feature, refactor, config change, …): after a 
 
 1. **Copy the template — do NOT Read it, do NOT write HTML boilerplate or CSS yourself:**
    ```bash
-   cp ~/.claude/skills/runbook/template.html <dest>.html
+   cp "<skill-dir>/template.html" <dest>.html
    ```
+   `<skill-dir>` is this skill's own directory — `template.html` sits right next to this SKILL.md (the skill's base path is shown when the skill loads). If the path isn't evident, locate it with `find ~/.claude/plugins ~/.claude/skills -path '*runbook/template.html' -print -quit 2>/dev/null`.
    Destination: the project's `docs/runbooks/` folder if it exists, else the project's `docs/`, else `~/docs/`. Use a kebab-case descriptive filename (e.g. `main-account-handover.html`).
    - **Check for an existing runbook first** — search the destination for a doc already covering this work and update it (chips, `Updated:` line, correction notes) instead of creating a near-duplicate.
    - **Sensitive-content gate:** if the runbook will hold infra/access detail (IPs, hostnames, account IDs, creds paths) and the destination is inside a git repo, verify the path is gitignored first (`git check-ignore -q <dest> && echo ignored`). If it isn't, use a gitignored location or `~/docs/` — never let a sensitive runbook become committable.
