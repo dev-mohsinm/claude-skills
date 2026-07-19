@@ -1,7 +1,7 @@
 {
 	"name": "runbook",
 	"description": "Document-first HTML runbooks with live status chips: plan-of-record before execution, hooks that offer runbooks at plan time and keep the doc mirroring reality",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"author": {
 		"name": "dev-mohsinm"
 	},
